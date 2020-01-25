@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:sgc_mvp/constants/circle.dart';
 import '../widgets/bottom_bar_tec.dart';
 import '../constants/size_config.dart';
+import './home.dart';
 
 class AuthenticationScreen extends StatefulWidget {
   @override
@@ -10,6 +11,26 @@ class AuthenticationScreen extends StatefulWidget {
 }
 
 class _AuthenticationScreenState extends State<AuthenticationScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  String _validator(String value) {
+    if (value == "1") {
+      return null;
+    }
+    if (value.isEmpty) {
+      return "Ingresa la clave";
+    } else {
+      return "Clave incorrecta";
+    }
+  }
+
+  void _btnValidar() {
+    if (_formKey.currentState.validate()) {
+      print("Codigo correcto");
+      Navigator.of(context).pushReplacementNamed(Home.routeName);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     //Inicializamos SizeConfig para obtener medidas
@@ -66,10 +87,10 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                         constraints: BoxConstraints(
                           maxWidth: 300,
                         ),
-                        child: Text(
+                        child: const Text(
                           "Bienvenido al Sistema de Gestión de Calidad",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 25),
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Expanded(
@@ -78,14 +99,15 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                       ),
                       ConstrainedBox(
                           constraints: BoxConstraints(maxWidth: 300),
-                          child: TextField( 
-                            textAlign: TextAlign.center,
-                            maxLength: 8,
-                            onChanged: (value) {
-
-                            },
-                            keyboardType: TextInputType.number,
-
+                          child: Form(
+                            key: _formKey,
+                            child: TextFormField(
+                              validator: _validator,
+                              textAlign: TextAlign.center,
+                              maxLength: 8,
+                              onChanged: (value) {},
+                              keyboardType: TextInputType.number,
+                            ),
                           )),
                       Expanded(
                         flex: 2,
@@ -95,15 +117,16 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                         width: 300,
                         child: FlatButton(
                           color: Color(0xff28629C),
+                          padding: EdgeInsets.all(10),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
                             "Validar",
                             style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
+                              color: Colors.white,
+                            ),
                           ),
-                          onPressed: () {},
+                          onPressed: _btnValidar,
                         ),
                       ),
                       Expanded(
