@@ -13,7 +13,16 @@ class Question extends StatefulWidget {
   _QuestionState createState() => _QuestionState();
 }
 
+
+
 class _QuestionState extends State<Question> {
+
+  bool evaluateLast({int index, List<dynamic> preguntas}) {
+    if (index == preguntas.length - 1) {
+      return true;
+    }
+    return false;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,13 +54,14 @@ class _QuestionState extends State<Question> {
                           loop: false,
                           pagination: SwiperPagination(
                             margin: EdgeInsets.only(
-                              bottom: SizeConfig.safeBlockVertical * 2,
+                              bottom: SizeConfig.safeBlockVertical * 3,
                             )
                           ),
                           itemBuilder: (context, index) {
                             return ContentQuestion(
                               key: ValueKey(index),  
                               question: Questions.questions[index],
+                              isLast: evaluateLast(index: index, preguntas: Questions.questions),
                             );
                           },
                         ),

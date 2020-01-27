@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.cyan,
+        accentColor: Color(0xff398B9F),
         scaffoldBackgroundColor: Colors.grey[200],
       ),
       home: AuthenticationScreen(),
