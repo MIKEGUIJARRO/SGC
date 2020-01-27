@@ -3,19 +3,24 @@ import 'package:flutter/material.dart';
 import '../constants/size_config.dart';
 import '../widgets/bottom_bar_tec.dart';
 import '../widgets/encuesta_info.dart';
+import '../screens/question.dart';
 
 class Home extends StatelessWidget {
   static const routeName = "/home";
 
+  void _iniciarEncuesta(BuildContext context) {
+    Navigator.of(context).pushNamed(Question.routeName);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Container(
           width: double.infinity,
           height: double.infinity,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Expanded(
                 child: Padding(
@@ -28,7 +33,7 @@ class Home extends StatelessWidget {
                     children: <Widget>[
                       Image.asset(
                         "./assets/images/logo.png",
-                        width: SizeConfig.safeBlockHorizontal * 20,
+                        width: SizeConfig.safeBlockHorizontal * 15,
                       ),
                       const Text(
                         "Encuesta Titulo",
@@ -53,7 +58,7 @@ class Home extends StatelessWidget {
                               
                             ),
                           ),
-                          onPressed: () {},
+                          onPressed: ()=> _iniciarEncuesta(context),
                         ),
                       ),
                     ],
