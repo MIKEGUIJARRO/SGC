@@ -9,7 +9,7 @@ import '../widgets/error_alert.dart';
 import '../widgets/content_question.dart';
 import '../provider/survey_holder.dart';
 
-class Question extends StatelessWidget {
+class QuestionScreen extends StatelessWidget {
   static const routeName = "/question";
 
   @override

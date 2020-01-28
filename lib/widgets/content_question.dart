@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../constants/size_config.dart';
 import '../constants/color_gradient.dart';
-import '../screens/home.dart';
+import '../screens/home_screen.dart';
 
 import '../provider/survey_holder.dart';
 import '../provider/survey.dart';
@@ -54,7 +54,7 @@ class _ContentQuestionState extends State<ContentQuestion> {
     final surveyHolder = Provider.of<SurveyHolder>(context, listen: false);
     surveyHolder.cleanResponses();
     Provider.of<Survey>(context, listen: false).addResponses(surveyHolder.getResponses());
-    Navigator.of(context).pushReplacementNamed(Home.routeName);
+    Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
   }
 
   @override

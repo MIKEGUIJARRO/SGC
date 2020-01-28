@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 
 class ResponseItem {
   //Id es el contador de preguntas
@@ -30,11 +32,17 @@ class Survey with ChangeNotifier {
     SurveyItem(question: "Pregunta 4?", responses: []), */
   ];
 
-  void initSurvey() {
+ Future<void> initSurvey({List<String> questions, List<ResponseItem> responses}) async {
+    //Puede mejorar por que fetchea todas las preguntas y todas las respuestas
+    //A largo plazo no es rentable...
     //Codigo donde descarga la base de datos
+    _surveyItems = questions.map((question) {
+      return SurveyItem(question: question, responses: responses);
+    }).toList();
   }
 
-  void addResponses(List<double> responses) {
+  addResponses(List<double> responses) {
+    //Se agregan las respuestas de manera local y en la nube
     //Cada indice de pregunta pasa su indice de respuesta
     if (responses.length != _surveyItems.length) {
       print(
@@ -55,6 +63,6 @@ class Survey with ChangeNotifier {
   }
 
   List<String> getQuestions() {
-    return _surveyItems.map((item)=> item.question).toList();
+    return _surveyItems.map((item) => item.question).toList();
   }
 }

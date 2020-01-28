@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:sgc_mvp/provider/survey.dart';
 
 import './screens/authentication_screen.dart';
-import './screens/home.dart';
-import './screens/question.dart';
+import './screens/home_screen.dart';
+import './screens/question_screen.dart';
 
 import './provider/survey_holder.dart';
 import './provider/survey_holder.dart';
@@ -35,8 +35,8 @@ class MyApp extends StatelessWidget {
         initialRoute: AuthenticationScreen.routeName,
         routes: {
           AuthenticationScreen.routeName: (context) => AuthenticationScreen(),
-          Home.routeName: (context) => Home(),
-          Question.routeName: (context) => Question(),
+          HomeScreen.routeName: (context) => HomeScreen(),
+          QuestionScreen.routeName: (context) => QuestionScreen(),
         },
       ),
     );

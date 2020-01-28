@@ -4,12 +4,12 @@ import 'package:provider/provider.dart';
 import '../constants/size_config.dart';
 import '../widgets/bottom_bar_tec.dart';
 import '../widgets/survey_info.dart';
-import '../screens/question.dart';
+import '../screens/question_screen.dart';
 
 import '../provider/survey.dart';
 import '../provider/survey_holder.dart';
 
-class Home extends StatelessWidget {
+class HomeScreen extends StatelessWidget {
   static const routeName = "/home";
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
@@ -19,7 +19,11 @@ class Home extends StatelessWidget {
     //Cargamos las preguntas a nuestro SurveyHolder
     List<String> questions = Provider.of<Survey>(context,listen: false).getQuestions();
     Provider.of<SurveyHolder>(context, listen: false).initSurveyHolder(questions);
-    Navigator.of(context).pushNamed(Question.routeName);
+    Navigator.of(context).pushNamed(QuestionScreen.routeName);
+  }
+
+  void _createSurvey(BuildContext context){
+    Navigator.pushNamed(context, "pendiente...");
   }
 
   @override
@@ -48,22 +52,22 @@ class Home extends StatelessWidget {
         ListTile(
           title: Text("Cambiar encuesta"),
           leading: Icon(Icons.swap_vert),
-          onTap: () {},
+          onTap: null,
         ),
         ListTile(
           title: Text("Crear encuesta"),
           leading: Icon(Icons.create),
-          onTap: () {},
+          onTap: ()=> _createSurvey(context),
         ),
         ListTile(
           title: Text("Cerrar sesión"),
           leading: Icon(Icons.chevron_left),
-          onTap: () {},
+          onTap: null,
         ),
         ListTile(
           title: Text("Información"),
           leading: Icon(Icons.info),
-          onTap: () {},
+          onTap: null,
         ),
       ])),
       body: SafeArea(

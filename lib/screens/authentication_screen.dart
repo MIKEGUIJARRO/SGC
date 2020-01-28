@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:sgc_mvp/constants/circle.dart';
 import '../widgets/bottom_bar_tec.dart';
 import '../constants/size_config.dart';
-import './home.dart';
+import './home_screen.dart';
 
 class AuthenticationScreen extends StatefulWidget {
 
@@ -29,7 +29,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   void _btnValidar() {
     if (_formKey.currentState.validate()) {
       print("Codigo correcto");
-      Navigator.of(context).pushReplacementNamed(Home.routeName);
+      Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
     }
   }
 
