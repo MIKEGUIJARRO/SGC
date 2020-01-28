@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 class SurveyHolderItem {
   final String question;
   double response;
+
   SurveyHolderItem({@required this.question, @required this.response});
 }
 
@@ -43,8 +44,14 @@ class SurveyHolder with ChangeNotifier {
     return _surveyHolderItems[index].response;
   }
 
-  void cleanResponses() {
-    _surveyHolderItems.forEach((element) => element.response = null);
-    notifyListeners();
+  Future<void> cleanResponses() async {
+    //Esperamos 500 milisegundos para realizar el cambio de pantalla y eliminar los datos
+    Future.delayed(Duration(milliseconds: 5), () {
+      _surveyHolderItems.forEach((element) {
+        element.response = null;
+      });
+      print("Eliminados");
+      notifyListeners();
+    });
   }
 }

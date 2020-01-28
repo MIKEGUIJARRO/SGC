@@ -36,26 +36,20 @@ class _ContentQuestionState extends State<ContentQuestion> {
       _isLast = surveyHolder.isLast(widget.index);
       _value = surveyHolder.getResponse(widget.index);
       _colorSelected = ColorGradient.calculateColor(val: _value);
-      if(_value == 0.5){ 
+      if (_value == 0.5) {
         //Si el valor se encuentra en medio entonces aun no se modifica
-        _isBtnEnabled = false;  
+        _isBtnEnabled = false;
       } else {
         _isBtnEnabled = true;
-      }; 
+      }
+
       _isInit = true;
     }
     super.didChangeDependencies();
   }
 
-  @override
-  void deactivate() {
-    //AL momento del swipe y mover la pantalla se guardan los valores
-    final surveyHOlder = Provider.of<SurveyHolder>(context, listen: false);
-    surveyHOlder.setResponse(widget.index, _value);
-    super.deactivate();
-  }
-
   void _onSave() {
+    Provider.of<SurveyHolder>(context, listen: false).cleanResponses();
     Navigator.of(context).pushReplacementNamed(Home.routeName);
   }
 
@@ -110,6 +104,8 @@ class _ContentQuestionState extends State<ContentQuestion> {
             onChanged: (newRating) {
               setState(() {
                 _value = newRating;
+                Provider.of<SurveyHolder>(context, listen: false)
+                    .setResponse(widget.index, _value);
                 _colorSelected = ColorGradient.calculateColor(val: _value);
                 if (_isLast) {
                   _isBtnEnabled = true;

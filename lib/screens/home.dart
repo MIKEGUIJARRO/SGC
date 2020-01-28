@@ -14,7 +14,7 @@ class Home extends StatelessWidget {
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
   void _startSurvey(BuildContext context) {
-    Provider.of<SurveyHolder>(context, listen: false).cleanResponses();
+    
     Navigator.of(context).pushNamed(Question.routeName);
   }
 
