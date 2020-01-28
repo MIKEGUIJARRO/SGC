@@ -3,6 +3,12 @@ import 'package:flutter/material.dart';
 import '../constants/size_config.dart';
 
 class ErrorAlert extends StatelessWidget {
+
+  final String mensajeError;
+
+  ErrorAlert({this.mensajeError});
+
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -27,7 +33,7 @@ class ErrorAlert extends StatelessWidget {
               SizedBox(
                 height: 10,
               ),
-              Text("Algo salió mal, intentemos una vez mas...",  textAlign: TextAlign.center,),
+              Text(mensajeError,  textAlign: TextAlign.center,),
               SizedBox(
                 height: 20,
               ),

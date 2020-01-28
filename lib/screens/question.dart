@@ -38,7 +38,7 @@ class Question extends StatelessWidget {
                         width: SizeConfig.safeBlockHorizontal * 15,
                       ),
                       Expanded(
-                        child: surveyHolder.isEmpty() ? ErrorAlert() :Swiper(
+                        child: surveyHolder.isEmpty() ? ErrorAlert(mensajeError: "Selecciona una encuesta o creá una nueva desde la barra de navegación",) :Swiper(
                           viewportFraction: 0.8,
                           scale: 0.9,
                           itemCount: surveyHolder.getLength(),
