@@ -1,30 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/bottom_bar_tec.dart';
 import '../constants/size_config.dart';
-import '../constants/questions.dart';
-import '../widgets/content_question.dart';
 
-class Question extends StatefulWidget {
+import '../widgets/content_question.dart';
+import '../provider/survey_holder.dart';
+
+class Question extends StatelessWidget {
   static const routeName = "/question";
 
   @override
-  _QuestionState createState() => _QuestionState();
-}
-
-
-
-class _QuestionState extends State<Question> {
-
-  bool evaluateLast({int index, List<dynamic> preguntas}) {
-    if (index == preguntas.length - 1) {
-      return true;
-    }
-    return false;
-  }
-  @override
   Widget build(BuildContext context) {
+    //Continua escuchando la longitud de la lista para futuros cambios
+    final listLength = Provider.of<SurveyHolder>(context).getLength();
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -49,19 +40,16 @@ class _QuestionState extends State<Question> {
                         child: Swiper(
                           viewportFraction: 0.8,
                           scale: 0.9,
-                          itemCount: Questions.questions.length,
+                          itemCount: listLength,
                           scrollDirection: Axis.horizontal,
                           loop: false,
                           pagination: SwiperPagination(
-                            margin: EdgeInsets.only(
-                              bottom: SizeConfig.safeBlockVertical * 3,
-                            )
-                          ),
-                          itemBuilder: (context, index) {
+                              margin: EdgeInsets.only(
+                            bottom: SizeConfig.safeBlockVertical * 3,
+                          )),
+                          itemBuilder: (context, i) {
                             return ContentQuestion(
-                              key: ValueKey(index),  
-                              question: Questions.questions[index],
-                              isLast: evaluateLast(index: index, preguntas: Questions.questions),
+                              index: i,
                             );
                           },
                         ),

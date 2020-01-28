@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../constants/size_config.dart';
 import '../widgets/bottom_bar_tec.dart';
-import '../widgets/encuesta_info.dart';
+import '../widgets/survey_info.dart';
 import '../screens/question.dart';
+import '../provider/survey_holder.dart';
 
 class Home extends StatelessWidget {
 
@@ -11,7 +13,8 @@ class Home extends StatelessWidget {
 
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
-  void _iniciarEncuesta(BuildContext context) {
+  void _startSurvey(BuildContext context) {
+    Provider.of<SurveyHolder>(context, listen: false).cleanResponses();
     Navigator.of(context).pushNamed(Question.routeName);
   }
 
@@ -38,10 +41,16 @@ class Home extends StatelessWidget {
               onTap: (){},
             ),
             ListTile(
+              title: Text("Crear encuesta"),
+              leading: Icon(Icons.create),
+              onTap: (){},
+            ),
+            ListTile(
               title: Text("Cerrar sesión"),
               leading: Icon(Icons.chevron_left),
               onTap: (){},
             ),
+            
             
             ListTile(
               title: Text("Información"),
@@ -87,7 +96,7 @@ class Home extends StatelessWidget {
                             textAlign: TextAlign.center,
                             style: TextStyle(fontSize: 20),
                           ),
-                          EncuestaInfo(
+                          SurveyInfo(
                             num: "5",
                           ),
                           SizedBox(
@@ -104,7 +113,7 @@ class Home extends StatelessWidget {
                                   color: Colors.white,
                                 ),
                               ),
-                              onPressed: () => _iniciarEncuesta(context),
+                              onPressed: () => _startSurvey(context),
                             ),
                           ),
                         ],

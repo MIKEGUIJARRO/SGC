@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 
-class EncuestaInfo extends StatelessWidget {
+class SurveyInfo extends StatelessWidget {
 
   final String num;
 
-  EncuestaInfo({this.num});
+  SurveyInfo({this.num});
 
   @override
   Widget build(BuildContext context) {

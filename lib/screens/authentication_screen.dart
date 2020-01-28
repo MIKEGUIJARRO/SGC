@@ -6,6 +6,8 @@ import '../constants/size_config.dart';
 import './home.dart';
 
 class AuthenticationScreen extends StatefulWidget {
+
+  static const routeName = "/";
   @override
   _AuthenticationScreenState createState() => _AuthenticationScreenState();
 }

@@ -1,38 +1,61 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../constants/size_config.dart';
 import '../constants/color_gradient.dart';
 import '../screens/home.dart';
+import '../provider/survey_holder.dart';
 
 class ContentQuestion extends StatefulWidget {
-  final question;
-  final Key key;
-  final isLast;
+  final int index;
 
-  ContentQuestion({this.question, this.key, this.isLast});
+  ContentQuestion({
+    this.index,
+  });
 
   @override
   _ContentQuestionState createState() => _ContentQuestionState();
 }
 
-class _ContentQuestionState extends State<ContentQuestion>
-    with AutomaticKeepAliveClientMixin {
-  bool btnEnabled = false;
-  bool keepAlive = false;
-  double value = 0.5;
-  Color colorSelected = Color(0xAAd4d4d4);
+class _ContentQuestionState extends State<ContentQuestion> {
+  bool _isBtnEnabled;
 
-  @override
-  //Permite mantener el state de la app (ScrollBar) constante al swipear
-  bool get wantKeepAlive => true;
+  double _value;
+  String _question;
+  bool _isLast;
+  Color _colorSelected;
 
+  bool _isInit = false;
+
+  //Al momento de que se crea nuestra vista rellenamos la UI
   @override
-  void updateKeepAlive() {
-    // TODO: implement updateKeepAlive
-    super.updateKeepAlive();
+  void didChangeDependencies() {
+    if (_isInit == false) {
+      final surveyHolder = Provider.of<SurveyHolder>(context, listen: false);
+      _question = surveyHolder.getQuestion(widget.index);
+      _isLast = surveyHolder.isLast(widget.index);
+      _value = surveyHolder.getResponse(widget.index);
+      _colorSelected = ColorGradient.calculateColor(val: _value);
+      if(_value == 0.5){ 
+        //Si el valor se encuentra en medio entonces aun no se modifica
+        _isBtnEnabled = false;  
+      } else {
+        _isBtnEnabled = true;
+      }; 
+      _isInit = true;
+    }
+    super.didChangeDependencies();
   }
 
-  void _onSave(){
+  @override
+  void deactivate() {
+    //AL momento del swipe y mover la pantalla se guardan los valores
+    final surveyHOlder = Provider.of<SurveyHolder>(context, listen: false);
+    surveyHOlder.setResponse(widget.index, _value);
+    super.deactivate();
+  }
+
+  void _onSave() {
     Navigator.of(context).pushReplacementNamed(Home.routeName);
   }
 
@@ -52,18 +75,19 @@ class _ContentQuestionState extends State<ContentQuestion>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Padding(
-                    padding: EdgeInsets.all(20), child: Text(widget.question)),
+                Padding(padding: EdgeInsets.all(20), child: Text(_question)),
                 Container(
-                  color: colorSelected,
+                  color: _colorSelected,
                   height: 40,
                   width: double.infinity,
                 )
               ],
             ),
           ),
-          widget.isLast && btnEnabled
+          _isLast
               ? FlatButton.icon(
+                  disabledColor: Colors.black26,
+                  disabledTextColor: Colors.white,
                   textColor: Colors.white,
                   label: Text(
                     "Guardar",
@@ -76,19 +100,19 @@ class _ContentQuestionState extends State<ContentQuestion>
                     Icons.save,
                     color: Colors.white,
                   ),
-                  onPressed: _onSave,
+                  onPressed: _isBtnEnabled ? _onSave : null,
                 )
               : SizedBox(),
           Slider(
-            value: value,
+            value: _value,
             min: 0.0,
             max: 1.0,
             onChanged: (newRating) {
               setState(() {
-                value = newRating;
-                colorSelected = ColorGradient.calculateColor(val: value);
-                if (widget.isLast) {
-                  btnEnabled = true;
+                _value = newRating;
+                _colorSelected = ColorGradient.calculateColor(val: _value);
+                if (_isLast) {
+                  _isBtnEnabled = true;
                 }
               });
             },
