@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../widgets/bottom_bar_tec.dart';
 import '../constants/size_config.dart';
+import '../widgets/error_alert.dart';
 
 import '../widgets/content_question.dart';
 import '../provider/survey_holder.dart';
@@ -14,7 +15,7 @@ class Question extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //Continua escuchando la longitud de la lista para futuros cambios
-    final listLength = Provider.of<SurveyHolder>(context).getLength();
+    final surveyHolder = Provider.of<SurveyHolder>(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -37,10 +38,10 @@ class Question extends StatelessWidget {
                         width: SizeConfig.safeBlockHorizontal * 15,
                       ),
                       Expanded(
-                        child: Swiper(
+                        child: surveyHolder.isEmpty() ? ErrorAlert() :Swiper(
                           viewportFraction: 0.8,
                           scale: 0.9,
-                          itemCount: listLength,
+                          itemCount: surveyHolder.getLength(),
                           scrollDirection: Axis.horizontal,
                           loop: false,
                           pagination: SwiperPagination(

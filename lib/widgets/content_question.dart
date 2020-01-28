@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import '../constants/size_config.dart';
 import '../constants/color_gradient.dart';
 import '../screens/home.dart';
+
 import '../provider/survey_holder.dart';
+import '../provider/survey.dart';
 
 class ContentQuestion extends StatefulWidget {
   final int index;
@@ -49,7 +51,9 @@ class _ContentQuestionState extends State<ContentQuestion> {
   }
 
   void _onSave() {
-    Provider.of<SurveyHolder>(context, listen: false).cleanResponses();
+    final surveyHolder = Provider.of<SurveyHolder>(context, listen: false);
+    surveyHolder.cleanResponses();
+    Provider.of<Survey>(context, listen: false).addResponses(surveyHolder.getResponses());
     Navigator.of(context).pushReplacementNamed(Home.routeName);
   }
 
@@ -65,6 +69,7 @@ class _ContentQuestionState extends State<ContentQuestion> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Card(
+            elevation: 8,
             clipBehavior: Clip.antiAlias,
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -101,11 +106,13 @@ class _ContentQuestionState extends State<ContentQuestion> {
             value: _value,
             min: 0.0,
             max: 1.0,
+            onChangeEnd: (lastRating) {
+              Provider.of<SurveyHolder>(context, listen: false)
+                  .setResponse(widget.index, lastRating);
+            },
             onChanged: (newRating) {
               setState(() {
                 _value = newRating;
-                Provider.of<SurveyHolder>(context, listen: false)
-                    .setResponse(widget.index, _value);
                 _colorSelected = ColorGradient.calculateColor(val: _value);
                 if (_isLast) {
                   _isBtnEnabled = true;

@@ -9,13 +9,21 @@ class SurveyHolderItem {
 
 class SurveyHolder with ChangeNotifier {
   List<SurveyHolderItem> _surveyHolderItems = [
-    SurveyHolderItem(
+    /* SurveyHolderItem(
         question: "1. Lorem ipsum dolor sit amet?", response: null),
     SurveyHolderItem(
         question: "2. Lorem ipsum dolor sit amet?", response: null),
     SurveyHolderItem(
         question: "3. Lorem ipsum dolor sit amet?", response: null),
+    SurveyHolderItem(
+        question: "3. Lorem ipsum dolor sit amet?", response: null), */
   ];
+
+  void initSurveyHolder(List<String> questions) {
+    _surveyHolderItems = questions.map((question) {
+      return SurveyHolderItem(question: question, response: null);
+    }).toList();
+  }
 
   int getLength() {
     return _surveyHolderItems.length;
@@ -24,6 +32,13 @@ class SurveyHolder with ChangeNotifier {
   //Devolver pregunta, no hace falta notifyListeners()
   String getQuestion(int index) {
     return _surveyHolderItems[index].question;
+  }
+
+  bool isEmpty() {
+    if (_surveyHolderItems.isEmpty) {
+      return true;
+    }
+    return false;
   }
 
   bool isLast(int index) {
@@ -42,6 +57,10 @@ class SurveyHolder with ChangeNotifier {
       return 0.5;
     }
     return _surveyHolderItems[index].response;
+  }
+
+  List<double> getResponses() {
+    return _surveyHolderItems.map((item) => item.response).toList();
   }
 
   Future<void> cleanResponses() async {
