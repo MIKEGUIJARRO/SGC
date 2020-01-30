@@ -26,10 +26,10 @@ class Survey with ChangeNotifier {
   //Esta es la encuesta que se estara trabajando en macro en la app.
   //La que se respondera "n" veces.
   List<SurveyItem> _surveyItems = [
-    /* SurveyItem(question: "Pregunta 1?", responses: []),
+    SurveyItem(question: "Pregunta 1?", responses: []),
     SurveyItem(question: "Pregunta 2?", responses: []),
     SurveyItem(question: "Pregunta 3?", responses: []),
-    SurveyItem(question: "Pregunta 4?", responses: []), */
+    SurveyItem(question: "Pregunta 4?", responses: []),
   ];
 
  Future<void> initSurvey({List<String> questions, List<ResponseItem> responses}) async {

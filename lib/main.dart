@@ -5,8 +5,7 @@ import 'package:sgc_mvp/provider/survey.dart';
 import './screens/authentication_screen.dart';
 import './screens/home_screen.dart';
 import './screens/question_screen.dart';
-
-import './provider/survey_holder.dart';
+import './screens/create_survey_screen.dart';
 import './provider/survey_holder.dart';
 
 void main() => runApp(MyApp());
@@ -14,6 +13,9 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
+    
+    
     
     return MultiProvider(
       providers: [
@@ -37,6 +39,7 @@ class MyApp extends StatelessWidget {
           AuthenticationScreen.routeName: (context) => AuthenticationScreen(),
           HomeScreen.routeName: (context) => HomeScreen(),
           QuestionScreen.routeName: (context) => QuestionScreen(),
+          CreateSurveyScreen.routeName: (context) => CreateSurveyScreen(),
         },
       ),
     );

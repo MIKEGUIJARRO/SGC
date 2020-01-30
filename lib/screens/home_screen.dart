@@ -5,6 +5,7 @@ import '../constants/size_config.dart';
 import '../widgets/bottom_bar_tec.dart';
 import '../widgets/survey_info.dart';
 import '../screens/question_screen.dart';
+import './create_survey_screen.dart';
 
 import '../provider/survey.dart';
 import '../provider/survey_holder.dart';
@@ -23,7 +24,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   void _createSurvey(BuildContext context){
-    Navigator.pushNamed(context, "pendiente...");
+    Navigator.pushNamed(context, CreateSurveyScreen.routeName);
   }
 
   @override

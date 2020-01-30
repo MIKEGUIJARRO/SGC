@@ -53,7 +53,8 @@ class _ContentQuestionState extends State<ContentQuestion> {
   void _onSave() {
     final surveyHolder = Provider.of<SurveyHolder>(context, listen: false);
     surveyHolder.cleanResponses();
-    Provider.of<Survey>(context, listen: false).addResponses(surveyHolder.getResponses());
+    Provider.of<Survey>(context, listen: false)
+        .addResponses(surveyHolder.getResponses());
     Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
   }
 
@@ -84,21 +85,12 @@ class _ContentQuestionState extends State<ContentQuestion> {
             ),
           ),
           _isLast
-              ? FlatButton.icon(
-                  disabledColor: Colors.black26,
-                  disabledTextColor: Colors.white,
-                  textColor: Colors.white,
-                  label: Text(
-                    "Guardar",
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50)),
-                  color: Theme.of(context).accentColor,
-                  icon: Icon(
-                    Icons.save,
-                    color: Colors.white,
-                  ),
+              ? FloatingActionButton(
+                  elevation: _isBtnEnabled ? 5 : 0,
+                  backgroundColor: _isBtnEnabled
+                      ? Theme.of(context).accentColor
+                      : Colors.grey[400],
+                  child: Icon(Icons.save),
                   onPressed: _isBtnEnabled ? _onSave : null,
                 )
               : SizedBox(),
