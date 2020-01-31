@@ -10,7 +10,7 @@ class BottomBarTec extends StatelessWidget {
         vertical: 10,
       ),
       width: SizeConfig.screenNoPaddingWidth,
-      height: SizeConfig.safeBlockVertical * 8,
+      height: SizeConfig.safeBlockVertical * 7.5,
       color: Color(0xff398B9F),
       child: Image.asset(
         "assets/images/tec.jpg",

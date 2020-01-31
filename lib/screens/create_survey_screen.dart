@@ -5,6 +5,7 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import '../widgets/bottom_bar_tec.dart';
 import '../constants/size_config.dart';
 import '../widgets/content_create_survey.dart';
+import '../screens/home_screen.dart';
 
 /* 
     Se busca el hacer la misma implementacion que se realizo con el Provider 
@@ -15,48 +16,59 @@ import '../widgets/content_create_survey.dart';
 
 class QuestionsHolder {
   final lim;
-  final List<TextEditingController> _controller = [
+  final List<TextEditingController> _controllers = [
     TextEditingController(), //La primer pregunta siempre esta vacia
   ];
 
   QuestionsHolder({@required this.lim});
 
   void addController() {
-    _controller.add(TextEditingController());
+    _controllers.add(TextEditingController());
   }
 
   void deleteController(int index) {
-    _controller.removeAt(index);
+    _controllers.removeAt(index);
   }
 
-  List<String> getQuestions(BuildContext ctx) { // pendiente de implementar
+  List<String> getQuestions() { // pendiente de implementar
     List<String> questions;
-    for (TextEditingController controller in _controller) {
+    for (TextEditingController controller in _controllers) {
       String question = controller.text;
-      if(!question.isEmpty){
-        questions.add(question);
-      }
-    }
-    if (questions.isEmpty) {
-      print("sad");
-      
+      questions.add(question);
     }
     return questions;
   }
 
+  bool areEmptyQuestions() {
+    bool empty = false;
+    for (TextEditingController controller in _controllers) {
+      String question = controller.text;
+      if (question.isEmpty) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   TextEditingController getController(int index){
-    return _controller[index];
+    return _controllers[index];
   }
 
   int getLength() {
-    return _controller.length;
+    return _controllers.length;
   }
 
   bool isLimitReached() {
-    if (_controller.length < 10) {
+    if (_controllers.length < 10) {
       return false;
     } else {
       return true;
+    }
+  }
+
+  void disposeControllers() {
+    for (TextEditingController controller in _controllers) {
+      controller.dispose();
     }
   }
 }
@@ -69,7 +81,75 @@ class CreateSurveyScreen extends StatefulWidget {
 }
 
 class _CreateSurveyScreenState extends State<CreateSurveyScreen> {
+
   final _questionsHolder = QuestionsHolder(lim: 10);
+
+  final GlobalKey<ScaffoldState> _scaffoldState = GlobalKey<ScaffoldState>();
+
+  var _controllerDialog = TextEditingController();
+
+  
+
+  @override
+  void dispose() {
+    _controllerDialog.dispose();
+    _questionsHolder.disposeControllers();
+    super.dispose();
+  }
+  
+
+  void _showSnackBar(String text, Color color) {
+    //Muestra si existe un textfield vacio.
+    final snackBar = SnackBar(
+      content: Text(text),
+      backgroundColor: color,
+    );
+    _scaffoldState.currentState.showSnackBar(snackBar);
+  }
+
+  void _showDialog() {
+    
+    bool isEmpty = false;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: Text("Guardando"),
+          content: TextField(
+            decoration: InputDecoration(
+              labelText: "Titulo",
+              errorText: isEmpty ? "Introduce un titulo": null,
+            ),
+            controller: _controllerDialog,
+          ),
+          elevation: 8,
+          actions: <Widget>[
+            FlatButton(
+              child: Text("Cancelar"),
+              color: Colors.red[300],
+              onPressed: (){
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text("Guardar"),
+              color: Theme.of(context).accentColor,
+              onPressed: (){
+                if (_controllerDialog.text.isNotEmpty) {
+                  Navigator.of(context).popAndPushNamed(HomeScreen.routeName);
+                } else {
+                  setState(() {
+                    isEmpty = true;
+                  });
+                }
+              },
+            )
+          ],
+        );
+      }
+    );
+  }
 
 
   void addQuestion() {
@@ -90,12 +170,22 @@ class _CreateSurveyScreenState extends State<CreateSurveyScreen> {
   }
 
   void saveQuestions() {
+    if (_questionsHolder.areEmptyQuestions() && _questionsHolder.getLength() > 1) {
+      _showSnackBar("Elimina las tarjetas vacias para continuar.", Colors.red[300]);
+    } else if (_questionsHolder.areEmptyQuestions() && _questionsHolder.getLength() == 1) {
+      _showSnackBar("Agrega más preguntas a las tarjetas.", Colors.grey[800]);
+    } else {
+      _showDialog();
+    }
     
   }
 
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
+      key: _scaffoldState,
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Container(
