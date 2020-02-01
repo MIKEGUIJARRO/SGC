@@ -65,4 +65,15 @@ class Survey with ChangeNotifier {
   List<String> getQuestions() {
     return _surveyItems.map((item) => item.question).toList();
   }
+
+  void setQuestions(List<String> questions) {
+    List<SurveyItem> newQuestions = questions.map((qxtn)=> SurveyItem(
+      question: qxtn,
+      responses: []
+    )).toList();
+    _surveyItems = newQuestions;
+
+    notifyListeners();
+    
+  }
 }

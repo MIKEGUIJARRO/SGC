@@ -1,11 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/bottom_bar_tec.dart';
 import '../constants/size_config.dart';
 import '../widgets/content_create_survey.dart';
-import '../screens/home_screen.dart';
+import '../widgets/alert_dialog_save.dart';
+import '../provider/survey.dart';
 
 /* 
     Se busca el hacer la misma implementacion que se realizo con el Provider 
@@ -30,17 +31,30 @@ class QuestionsHolder {
     _controllers.removeAt(index);
   }
 
-  List<String> getQuestions() { // pendiente de implementar
-    List<String> questions;
-    for (TextEditingController controller in _controllers) {
-      String question = controller.text;
-      questions.add(question);
+  void updateProvider(BuildContext context) {
+    List<String> questions = [];
+    try {
+      for (var controller in _controllers) {
+        if (controller.text.isNotEmpty) {
+          questions.add(controller.text);
+          print(controller.text.toString());
+        } else {
+          questions.add("empty");
+          print("controller vacio");
+        }
+      }
+      print("--------------------\n");
+      Provider.of<Survey>(context, listen: false).setQuestions(questions);
+    } catch (error) {
+      print("Sucedio un error: $error");
     }
-    return questions;
+
+    
+
   }
 
+
   bool areEmptyQuestions() {
-    bool empty = false;
     for (TextEditingController controller in _controllers) {
       String question = controller.text;
       if (question.isEmpty) {
@@ -50,7 +64,7 @@ class QuestionsHolder {
     return false;
   }
 
-  TextEditingController getController(int index){
+  TextEditingController getController(int index) {
     return _controllers[index];
   }
 
@@ -81,22 +95,16 @@ class CreateSurveyScreen extends StatefulWidget {
 }
 
 class _CreateSurveyScreenState extends State<CreateSurveyScreen> {
-
   final _questionsHolder = QuestionsHolder(lim: 10);
 
   final GlobalKey<ScaffoldState> _scaffoldState = GlobalKey<ScaffoldState>();
 
-  var _controllerDialog = TextEditingController();
-
-  
-
   @override
   void dispose() {
-    _controllerDialog.dispose();
     _questionsHolder.disposeControllers();
+
     super.dispose();
   }
-  
 
   void _showSnackBar(String text, Color color) {
     //Muestra si existe un textfield vacio.
@@ -107,50 +115,18 @@ class _CreateSurveyScreenState extends State<CreateSurveyScreen> {
     _scaffoldState.currentState.showSnackBar(snackBar);
   }
 
-  void _showDialog() {
-    
-    bool isEmpty = false;
-
+  void _showDialogSave() {
     showDialog(
-      context: context,
-      builder: (BuildContext ctx) {
-        return AlertDialog(
-          title: Text("Guardando"),
-          content: TextField(
-            decoration: InputDecoration(
-              labelText: "Titulo",
-              errorText: isEmpty ? "Introduce un titulo": null,
-            ),
-            controller: _controllerDialog,
-          ),
-          elevation: 8,
-          actions: <Widget>[
-            FlatButton(
-              child: Text("Cancelar"),
-              color: Colors.red[300],
-              onPressed: (){
-                Navigator.of(context).pop();
-              },
-            ),
-            FlatButton(
-              child: Text("Guardar"),
-              color: Theme.of(context).accentColor,
-              onPressed: (){
-                if (_controllerDialog.text.isNotEmpty) {
-                  Navigator.of(context).popAndPushNamed(HomeScreen.routeName);
-                } else {
-                  setState(() {
-                    isEmpty = true;
-                  });
-                }
-              },
-            )
-          ],
-        );
-      }
-    );
+        barrierDismissible: true,
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialogSave(
+            disposeHolder: () {
+              print("hola mundo");
+            },
+          );
+        });
   }
-
 
   void addQuestion() {
     if (_questionsHolder.getLength() < 10) {
@@ -164,103 +140,111 @@ class _CreateSurveyScreenState extends State<CreateSurveyScreen> {
     if (_questionsHolder.getLength() > 1) {
       setState(() {
         _questionsHolder.deleteController(index);
-        print("Eliminado");
       });
     }
   }
 
-  void saveQuestions() {
-    if (_questionsHolder.areEmptyQuestions() && _questionsHolder.getLength() > 1) {
-      _showSnackBar("Elimina las tarjetas vacias para continuar.", Colors.red[300]);
-    } else if (_questionsHolder.areEmptyQuestions() && _questionsHolder.getLength() == 1) {
+  void saveQuestions(){
+    //pin
+
+    if (_questionsHolder.areEmptyQuestions() &&
+        _questionsHolder.getLength() > 1) {
+      _showSnackBar(
+          "Elimina las tarjetas vacias para continuar.", Colors.red[300]);
+    } else if (_questionsHolder.areEmptyQuestions() &&
+        _questionsHolder.getLength() == 1) {
       _showSnackBar("Agrega más preguntas a las tarjetas.", Colors.grey[800]);
     } else {
-      _showDialog();
+      _questionsHolder.updateProvider(context);
+      //_showDialogSave();
     }
-    
   }
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       key: _scaffoldState,
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Container(
-          width: double.infinity,
-          height: double.infinity,
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    /* horizontal: SizeConfig.safeBlockVertical * 10, */
-                    top: SizeConfig.safeBlockVertical * 5,
-                  ),
-                  child: Stack(
-                    children: <Widget>[
-                      Positioned(
-                        right: SizeConfig.safeBlockHorizontal * 8,
-                        top: 0,
-
-                        child: IconButton(
-                          color: Theme.of(context).accentColor,
-                          icon: Icon(Icons.save),
-                          onPressed: saveQuestions,
-                        ),
-                      ),
-                      Column(
-                        children: <Widget>[
-                          Image.asset(
-                            "./assets/images/logo.png",
-                            width: SizeConfig.safeBlockHorizontal * 15,
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: SafeArea(
+          child: Container(
+            width: double.infinity,
+            height: double.infinity,
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      /* horizontal: SizeConfig.safeBlockVertical * 10, */
+                      top: SizeConfig.safeBlockVertical * 5,
+                    ),
+                    child: Stack(
+                      children: <Widget>[
+                        Positioned(
+                          right: SizeConfig.safeBlockHorizontal * 8,
+                          top: 0,
+                          child: IconButton(
+                            color: Theme.of(context).accentColor,
+                            icon: Icon(Icons.save),
+                            onPressed: saveQuestions,
                           ),
-                          Expanded(
-                            child: Swiper(
-                              viewportFraction: 0.8,
-                              scale: 0.9,
-                              itemCount: _questionsHolder.getLength(),
-                              scrollDirection: Axis.horizontal,
-                              loop: false,
-                              pagination: SwiperPagination(
-                                  margin: EdgeInsets.only(
-                                bottom: SizeConfig.safeBlockVertical * 3,
-                              )),
-                              itemBuilder: (context, i) {
-                                return ContentCreateSurvey(
-                                  index: i,
-                                  delete: removeQuestion,
-                                  key: ValueKey(i),
-                                  controller: _questionsHolder.getController(i),
-                                  length: _questionsHolder.getLength(),
-                                );
-                              },
-                            ),
-                          )
-                        ],
-                      ),
-                      Positioned(
-                        bottom: SizeConfig.safeBlockHorizontal * 5,
-                        right: SizeConfig.safeBlockHorizontal * 5,
-                        child: FloatingActionButton(
-                          elevation: _questionsHolder.isLimitReached() ? 0 : 5,
-                          backgroundColor: _questionsHolder.isLimitReached()
-                              ? Colors.grey[400]
-                              : Theme.of(context).accentColor,
-                          child: Icon(Icons.add),
-                          onPressed: _questionsHolder.isLimitReached()
-                              ? null
-                              : addQuestion,
                         ),
-                      )
-                    ],
+                        Column(
+                          children: <Widget>[
+                            Image.asset(
+                              "./assets/images/logo.png",
+                              width: SizeConfig.safeBlockHorizontal * 15,
+                            ),
+                            Expanded(
+                              child: Swiper(
+                                viewportFraction: 0.8,
+                                scale: 0.9,
+                                itemCount: _questionsHolder.getLength(),
+                                scrollDirection: Axis.horizontal,
+                                loop: false,
+                                pagination: SwiperPagination(
+                                    margin: EdgeInsets.only(
+                                  bottom: SizeConfig.safeBlockVertical * 3,
+                                )),
+                                itemBuilder: (context, i) {
+                                  return ContentCreateSurvey(
+                                    index: i,
+                                    delete: removeQuestion,
+                                    key: ValueKey(i),
+                                    controller:
+                                        _questionsHolder.getController(i),
+                                    length: _questionsHolder.getLength(),
+                                  );
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                        Positioned(
+                          bottom: SizeConfig.safeBlockHorizontal * 5,
+                          right: SizeConfig.safeBlockHorizontal * 5,
+                          child: FloatingActionButton(
+                            elevation:
+                                _questionsHolder.isLimitReached() ? 0 : 5,
+                            backgroundColor: _questionsHolder.isLimitReached()
+                                ? Colors.grey[400]
+                                : Theme.of(context).accentColor,
+                            child: Icon(Icons.add),
+                            onPressed: _questionsHolder.isLimitReached()
+                                ? null
+                                : addQuestion,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              BottomBarTec()
-            ],
+                BottomBarTec()
+              ],
+            ),
           ),
         ),
       ),
