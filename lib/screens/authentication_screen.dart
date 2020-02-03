@@ -104,11 +104,14 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                           child: Form(
                             key: _formKey,
                             child: TextFormField(
+
                               validator: _validator,
                               textAlign: TextAlign.center,
                               maxLength: 8,
                               onChanged: (value) {},
                               keyboardType: TextInputType.number,
+                              textInputAction: TextInputAction.done,
+                              onFieldSubmitted: (input)=> print(input),
                             ),
                           )),
                       Expanded(

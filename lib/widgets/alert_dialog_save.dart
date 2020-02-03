@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../screens/home_screen.dart';
-
 class AlertDialogSave extends StatefulWidget {
   final Function disposeHolder;
 
@@ -20,6 +18,7 @@ class _AlertDialogSaveState extends State<AlertDialogSave> {
     return AlertDialog(
       title: Text("Guardando"),
       content: TextField(
+        textCapitalization: TextCapitalization.sentences,
         decoration: InputDecoration(
           labelText: "Titulo",
           errorText: isEmpty ? "Requerido" : null,
@@ -40,7 +39,7 @@ class _AlertDialogSaveState extends State<AlertDialogSave> {
           color: Theme.of(context).accentColor,
           onPressed: () {
             if (_controllerDialog.text.isNotEmpty) {
-              widget.disposeHolder();
+              widget.disposeHolder(_controllerDialog.text);
               Navigator.of(context).pop();
             } else {
               setState(() {

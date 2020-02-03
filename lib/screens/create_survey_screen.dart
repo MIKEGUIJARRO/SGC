@@ -31,7 +31,7 @@ class QuestionsHolder {
     _controllers.removeAt(index);
   }
 
-  void updateProvider(BuildContext context) {
+  void updateProvider(BuildContext context, String title) {
     List<String> questions = [];
     try {
       for (var controller in _controllers) {
@@ -44,15 +44,12 @@ class QuestionsHolder {
         }
       }
       print("--------------------\n");
-      Provider.of<Survey>(context, listen: false).setQuestions(questions);
+      Provider.of<Survey>(context, listen: false)
+          .setNewQuestions(questions, title);
     } catch (error) {
       print("Sucedio un error: $error");
     }
-
-    
-
   }
-
 
   bool areEmptyQuestions() {
     for (TextEditingController controller in _controllers) {
@@ -102,7 +99,6 @@ class _CreateSurveyScreenState extends State<CreateSurveyScreen> {
   @override
   void dispose() {
     _questionsHolder.disposeControllers();
-
     super.dispose();
   }
 
@@ -113,19 +109,6 @@ class _CreateSurveyScreenState extends State<CreateSurveyScreen> {
       backgroundColor: color,
     );
     _scaffoldState.currentState.showSnackBar(snackBar);
-  }
-
-  void _showDialogSave() {
-    showDialog(
-        barrierDismissible: true,
-        context: context,
-        builder: (BuildContext ctx) {
-          return AlertDialogSave(
-            disposeHolder: () {
-              print("hola mundo");
-            },
-          );
-        });
   }
 
   void addQuestion() {
@@ -144,9 +127,7 @@ class _CreateSurveyScreenState extends State<CreateSurveyScreen> {
     }
   }
 
-  void saveQuestions(){
-    //pin
-
+  void saveQuestions() {
     if (_questionsHolder.areEmptyQuestions() &&
         _questionsHolder.getLength() > 1) {
       _showSnackBar(
@@ -155,8 +136,26 @@ class _CreateSurveyScreenState extends State<CreateSurveyScreen> {
         _questionsHolder.getLength() == 1) {
       _showSnackBar("Agrega más preguntas a las tarjetas.", Colors.grey[800]);
     } else {
-      _questionsHolder.updateProvider(context);
-      //_showDialogSave();
+      //Mostramos dialogo de cierre
+      showDialog(
+          barrierDismissible: true,
+          context: context,
+          builder: (BuildContext ctx) {
+            return AlertDialogSave(
+              disposeHolder: (String tituloDialog) {
+                _questionsHolder.updateProvider(context, tituloDialog);
+                Navigator.of(context).pop();
+              },
+            );
+          });
+    }
+  }
+
+  Widget _isKeyboardVisible() {
+    if (MediaQuery.of(context).viewInsets.bottom == 0) {
+      return BottomBarTec();
+    } else {
+      return SizedBox();
     }
   }
 
@@ -171,78 +170,81 @@ class _CreateSurveyScreenState extends State<CreateSurveyScreen> {
         },
         child: SafeArea(
           child: Container(
+            color: Colors.white,
+            padding: EdgeInsets.only(
+              top: SizeConfig.safeBlockVertical * 5,
+            ),
             width: double.infinity,
             height: double.infinity,
             child: Column(
+              mainAxisSize: MainAxisSize.max,
               children: <Widget>[
                 Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      /* horizontal: SizeConfig.safeBlockVertical * 10, */
-                      top: SizeConfig.safeBlockVertical * 5,
-                    ),
-                    child: Stack(
-                      children: <Widget>[
-                        Positioned(
-                          right: SizeConfig.safeBlockHorizontal * 8,
-                          top: 0,
-                          child: IconButton(
-                            color: Theme.of(context).accentColor,
-                            icon: Icon(Icons.save),
-                            onPressed: saveQuestions,
-                          ),
+                    child: Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    overflow: Overflow.visible,
+                    children: <Widget>[
+                      Positioned(
+                        right: SizeConfig.safeBlockHorizontal * 8,
+                        top: 0,
+                        child: IconButton(
+                          color: Theme.of(context).accentColor,
+                          icon: Icon(Icons.save),
+                          onPressed: saveQuestions,
                         ),
-                        Column(
-                          children: <Widget>[
-                            Image.asset(
-                              "./assets/images/logo.png",
-                              width: SizeConfig.safeBlockHorizontal * 15,
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Image.asset(
+                            "./assets/images/logo.png",
+                            width: SizeConfig.safeBlockHorizontal * 15,
+                          ),
+                          Expanded(
+                            child: Swiper(
+                              viewportFraction: 0.8,
+                              scale: 0.9,
+                              itemCount: _questionsHolder.getLength(),
+                              scrollDirection: Axis.horizontal,
+                              loop: false,
+                              pagination: SwiperPagination(
+                                  margin: EdgeInsets.only(
+                                bottom: SizeConfig.safeBlockVertical * 3,
+                              )),
+                              itemBuilder: (context, i) {
+                                return ContentCreateSurvey(
+                                  index: i,
+                                  delete: removeQuestion,
+                                  key: ValueKey(i),
+                                  controller: _questionsHolder.getController(i),
+                                  length: _questionsHolder.getLength(),
+                                );
+                              },
                             ),
-                            Expanded(
-                              child: Swiper(
-                                viewportFraction: 0.8,
-                                scale: 0.9,
-                                itemCount: _questionsHolder.getLength(),
-                                scrollDirection: Axis.horizontal,
-                                loop: false,
-                                pagination: SwiperPagination(
-                                    margin: EdgeInsets.only(
-                                  bottom: SizeConfig.safeBlockVertical * 3,
-                                )),
-                                itemBuilder: (context, i) {
-                                  return ContentCreateSurvey(
-                                    index: i,
-                                    delete: removeQuestion,
-                                    key: ValueKey(i),
-                                    controller:
-                                        _questionsHolder.getController(i),
-                                    length: _questionsHolder.getLength(),
-                                  );
-                                },
-                              ),
-                            )
-                          ],
+                          )
+                        ],
+                      ),
+                      Positioned(
+                        bottom: SizeConfig.safeBlockHorizontal * 20,
+                        right: SizeConfig.safeBlockHorizontal * 10,
+                        child: FloatingActionButton(
+                          elevation: _questionsHolder.isLimitReached() ? 0 : 5,
+                          backgroundColor: _questionsHolder.isLimitReached()
+                              ? Colors.grey[400]
+                              : Theme.of(context).accentColor,
+                          child: Icon(Icons.add),
+                          onPressed: _questionsHolder.isLimitReached()
+                              ? null
+                              : addQuestion,
                         ),
-                        Positioned(
-                          bottom: SizeConfig.safeBlockHorizontal * 5,
-                          right: SizeConfig.safeBlockHorizontal * 5,
-                          child: FloatingActionButton(
-                            elevation:
-                                _questionsHolder.isLimitReached() ? 0 : 5,
-                            backgroundColor: _questionsHolder.isLimitReached()
-                                ? Colors.grey[400]
-                                : Theme.of(context).accentColor,
-                            child: Icon(Icons.add),
-                            onPressed: _questionsHolder.isLimitReached()
-                                ? null
-                                : addQuestion,
-                          ),
-                        )
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ),
-                BottomBarTec()
+                )),
+                _isKeyboardVisible(),
               ],
             ),
           ),

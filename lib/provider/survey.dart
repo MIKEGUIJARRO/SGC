@@ -25,34 +25,46 @@ class SurveyItem {
 class Survey with ChangeNotifier {
   //Esta es la encuesta que se estara trabajando en macro en la app.
   //La que se respondera "n" veces.
-  List<SurveyItem> _surveyItems = [
-    /* SurveyItem(question: "Pregunta 1?", responses: []),
+
+  Map<String, dynamic> _surveyItems = {
+    "title": "",
+    "content": [
+      //Lista de surveyItems
+      SurveyItem(question: "Pregunta 1?", responses: []),
     SurveyItem(question: "Pregunta 2?", responses: []),
     SurveyItem(question: "Pregunta 3?", responses: []),
-    SurveyItem(question: "Pregunta 4?", responses: []), */
-  ];
+    SurveyItem(question: "Pregunta 4?", responses: []),
+    ],
+  };
 
- Future<void> initSurvey({List<String> questions, List<ResponseItem> responses}) async {
+  Future<void> initSurvey(
+      {String title,
+      List<String> questions,
+      List<ResponseItem> responses}) async {
     //Puede mejorar por que fetchea todas las preguntas y todas las respuestas
     //A largo plazo no es rentable...
     //Codigo donde descarga la base de datos
-    _surveyItems = questions.map((question) {
+
+    _surveyItems["title"] = title;
+    _surveyItems["content"] = questions.map((question) {
       return SurveyItem(question: question, responses: responses);
     }).toList();
+
+    
   }
 
   addResponses(List<double> responses) {
     //Se agregan las respuestas de manera local y en la nube
     //Cada indice de pregunta pasa su indice de respuesta
-    if (responses.length != _surveyItems.length) {
+    if (responses.length != _surveyItems["content"].length) {
       print(
           "Existe una diferencia entre la cantidad de respuestas obtenidas y la las preguntas");
       //Throw Error
       return;
     }
 
-    for (int i = 0; i < _surveyItems.length; i++) {
-      _surveyItems[i].responses.add(ResponseItem(
+    for (int i = 0; i < _surveyItems["content"].length; i++) {
+      _surveyItems["content"][i].responses.add(ResponseItem(
           id: DateTime.now().toString(),
           response: responses[i],
           dateTime: DateTime.now()));
@@ -63,17 +75,17 @@ class Survey with ChangeNotifier {
   }
 
   List<String> getQuestions() {
-    return _surveyItems.map((item) => item.question).toList();
+    var surveyHolder = _surveyItems["content"] as List<SurveyItem>;
+    return surveyHolder.map((item) => item.question).toList();
   }
 
-  void setQuestions(List<String> questions) {
-    List<SurveyItem> newQuestions = questions.map((qxtn)=> SurveyItem(
-      question: qxtn,
-      responses: []
-    )).toList();
-    _surveyItems = newQuestions;
-
+  void setNewQuestions(List<String> questions, String title) {
+    _surveyItems["title"] = title;
+    print(_surveyItems["title"]);
+    List<SurveyItem> newQuestions = questions
+        .map((qxtn) => SurveyItem(question: qxtn, responses: []))
+        .toList();
+    _surveyItems["content"] = newQuestions;
     notifyListeners();
-    
   }
 }

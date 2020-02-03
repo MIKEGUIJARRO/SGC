@@ -67,6 +67,7 @@ class ContentCreateSurvey extends StatelessWidget {
                     bottom: 20,
                   ),
                   child: TextField(
+                    textInputAction: TextInputAction.done,
                     controller: controller,
                     maxLines: 5,
                     textCapitalization: TextCapitalization.sentences,
