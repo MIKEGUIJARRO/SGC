@@ -27,7 +27,8 @@ class Survey with ChangeNotifier {
   //La que se respondera "n" veces.
 
   Map<String, dynamic> _surveyItems = {
-    "title": "",
+    "title": "titulo default",
+    "counter": 0,
     "content": [
       //Lista de surveyItems
       SurveyItem(question: "Pregunta 1?", responses: []),
@@ -39,6 +40,7 @@ class Survey with ChangeNotifier {
 
   Future<void> initSurvey(
       {String title,
+      int counter,
       List<String> questions,
       List<ResponseItem> responses}) async {
     //Puede mejorar por que fetchea todas las preguntas y todas las respuestas
@@ -46,11 +48,10 @@ class Survey with ChangeNotifier {
     //Codigo donde descarga la base de datos
 
     _surveyItems["title"] = title;
+    _surveyItems["counter"] = counter;
     _surveyItems["content"] = questions.map((question) {
       return SurveyItem(question: question, responses: responses);
     }).toList();
-
-    
   }
 
   addResponses(List<double> responses) {
@@ -88,4 +89,19 @@ class Survey with ChangeNotifier {
     _surveyItems["content"] = newQuestions;
     notifyListeners();
   }
+
+  void increaseCounter() {
+    _surveyItems["counter"] ++;
+    notifyListeners();
+  }
+
+  int getCounter() {
+    return _surveyItems["counter"];
+  }
+
+  String getTitle() {
+    return _surveyItems["title"];
+  }
+
+
 }

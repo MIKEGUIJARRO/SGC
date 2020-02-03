@@ -14,7 +14,6 @@ class HomeScreen extends StatelessWidget {
   static const routeName = "/home";
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
-  void loadAndUpdateContent(BuildContext context) {}
 
   void _startSurvey(BuildContext context) {
     //Cargamos las preguntas a nuestro SurveyHolder
@@ -29,6 +28,9 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final _survey = Provider.of<Survey>(context);
+
     return Scaffold(
       key: _drawerKey,
       backgroundColor: Colors.white,
@@ -102,13 +104,13 @@ class HomeScreen extends StatelessWidget {
                             "./assets/images/logo.png",
                             width: SizeConfig.safeBlockHorizontal * 15,
                           ),
-                          const Text(
-                            "Encuesta Titulo",
+                          Text(
+                            _survey.getTitle(),
                             textAlign: TextAlign.center,
                             style: TextStyle(fontSize: 20),
                           ),
                           SurveyInfo(
-                            num: "5",
+                            num: _survey.getCounter(),
                           ),
                           SizedBox(
                             width: double.infinity,
