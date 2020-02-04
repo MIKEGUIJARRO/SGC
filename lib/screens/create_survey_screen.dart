@@ -7,6 +7,7 @@ import '../constants/size_config.dart';
 import '../widgets/content_create_survey.dart';
 import '../widgets/alert_dialog_save.dart';
 import '../provider/survey.dart';
+import '../widgets/custom_app_bar.dart';
 
 /* 
     Se busca el hacer la misma implementacion que se realizo con el Provider 
@@ -44,8 +45,8 @@ class QuestionsHolder {
         }
       }
       print("--------------------\n");
-      Provider.of<Survey>(context, listen: false)
-          .setNewQuestions(questions, title);
+      Provider.of<Survey>(context, listen: false).initSurvey(
+          counter: 0, questions: questions, title: title, responses: []);
     } catch (error) {
       print("Sucedio un error: $error");
     }
@@ -86,6 +87,18 @@ class QuestionsHolder {
 
 class CreateSurveyScreen extends StatefulWidget {
   static final routeName = "/create_survey";
+
+  /*
+      Bug pendiente de revision:
+      Lunes 3 de Febrero, 2020.
+
+      Al momento de seleccionar el TextField los cards aledaños se elevan unas milesimas,
+      considero que esto se debe a la transformacion de:
+
+      scale: 0.9,
+
+      dentro del swiper.
+  */
 
   @override
   _CreateSurveyScreenState createState() => _CreateSurveyScreenState();
@@ -164,89 +177,75 @@ class _CreateSurveyScreenState extends State<CreateSurveyScreen> {
     return Scaffold(
       key: _scaffoldState,
       backgroundColor: Colors.white,
+      appBar: CustomAppBar(
+        isRightEnabled: true,
+        isLeftEnabled: true,
+        iconLeft: IconButton(
+            alignment: Alignment.centerLeft,
+            icon: Icon(Icons.arrow_back_ios),
+            onPressed: () => Navigator.of(context).pop()),
+        iconRight: IconButton(
+          color: Theme.of(context).accentColor,
+          icon: Icon(Icons.save),
+          onPressed: saveQuestions,
+        ),
+      ),
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
         },
         child: SafeArea(
-          child: Container(
-            color: Colors.white,
-            padding: EdgeInsets.only(
-              top: SizeConfig.safeBlockVertical * 5,
-            ),
-            width: double.infinity,
-            height: double.infinity,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                Expanded(
-                    child: Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    overflow: Overflow.visible,
-                    children: <Widget>[
-                      Positioned(
-                        right: SizeConfig.safeBlockHorizontal * 8,
-                        top: 0,
-                        child: IconButton(
-                          color: Theme.of(context).accentColor,
-                          icon: Icon(Icons.save),
-                          onPressed: saveQuestions,
-                        ),
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: Stack(
+                  alignment: Alignment.topCenter,
+                  overflow: Overflow.visible,
+                  children: <Widget>[
+                    Swiper(
+                      viewportFraction: 0.8,
+                      scale: 0.9,
+                      itemCount: _questionsHolder.getLength(),
+                      scrollDirection: Axis.horizontal,
+                      loop: false,
+                      pagination: SwiperPagination(
+                          margin: EdgeInsets.only(
+                        bottom: SizeConfig.safeBlockVertical * 3,
+                      )),
+                      containerWidth: 200,
+                      containerHeight: 200,
+                      itemHeight: 150,
+                      itemWidth: 150,
+                      layout: SwiperLayout.DEFAULT,
+                      itemBuilder: (context, i) {
+                        return ContentCreateSurvey(
+                          index: i,
+                          delete: removeQuestion,
+                          key: ValueKey(i),
+                          controller: _questionsHolder.getController(i),
+                          length: _questionsHolder.getLength(),
+                        );
+                      },
+                    ),
+                    Positioned(
+                      bottom: SizeConfig.safeBlockVertical * 5,
+                      right: SizeConfig.safeBlockHorizontal * 8,
+                      child: FloatingActionButton(
+                        elevation: _questionsHolder.isLimitReached() ? 0 : 5,
+                        backgroundColor: _questionsHolder.isLimitReached()
+                            ? Colors.grey[400]
+                            : Theme.of(context).accentColor,
+                        child: Icon(Icons.add),
+                        onPressed: _questionsHolder.isLimitReached()
+                            ? null
+                            : addQuestion,
                       ),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Image.asset(
-                            "./assets/images/logo.png",
-                            width: SizeConfig.safeBlockHorizontal * 15,
-                          ),
-                          Expanded(
-                            child: Swiper(
-                              viewportFraction: 0.8,
-                              scale: 0.9,
-                              itemCount: _questionsHolder.getLength(),
-                              scrollDirection: Axis.horizontal,
-                              loop: false,
-                              pagination: SwiperPagination(
-                                  margin: EdgeInsets.only(
-                                bottom: SizeConfig.safeBlockVertical * 3,
-                              )),
-                              itemBuilder: (context, i) {
-                                return ContentCreateSurvey(
-                                  index: i,
-                                  delete: removeQuestion,
-                                  key: ValueKey(i),
-                                  controller: _questionsHolder.getController(i),
-                                  length: _questionsHolder.getLength(),
-                                );
-                              },
-                            ),
-                          )
-                        ],
-                      ),
-                      Positioned(
-                        bottom: SizeConfig.safeBlockHorizontal * 20,
-                        right: SizeConfig.safeBlockHorizontal * 10,
-                        child: FloatingActionButton(
-                          elevation: _questionsHolder.isLimitReached() ? 0 : 5,
-                          backgroundColor: _questionsHolder.isLimitReached()
-                              ? Colors.grey[400]
-                              : Theme.of(context).accentColor,
-                          child: Icon(Icons.add),
-                          onPressed: _questionsHolder.isLimitReached()
-                              ? null
-                              : addQuestion,
-                        ),
-                      ),
-                    ],
-                  ),
-                )),
-                _isKeyboardVisible(),
-              ],
-            ),
+                    ),
+                  ],
+                ),
+              ),
+              _isKeyboardVisible(),
+            ],
           ),
         ),
       ),

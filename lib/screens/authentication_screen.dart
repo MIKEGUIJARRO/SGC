@@ -6,7 +6,6 @@ import '../constants/size_config.dart';
 import './home_screen.dart';
 
 class AuthenticationScreen extends StatefulWidget {
-
   static const routeName = "/";
   @override
   _AuthenticationScreenState createState() => _AuthenticationScreenState();
@@ -74,69 +73,59 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                   width: SizeConfig.screenWidth,
                   height: SizeConfig.screenHeight,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
-                      Image.asset(
-                        "assets/images/logo.png",
-                        width: SizeConfig.safeBlockHorizontal * 25,
-                      ),
                       Expanded(
-                        flex: 1,
-                        child: SizedBox(),
-                      ),
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: 300,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.safeBlockHorizontal * 15,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            mainAxisSize: MainAxisSize.max,
+                            children: <Widget>[
+                              Image.asset(
+                                "assets/images/logo.png",
+                                width: SizeConfig.safeBlockHorizontal * 25,
+                              ),
+                              const Text(
+                                "Bienvenido al Sistema de Gestión de Calidad",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 18),
+                              ),
+                               Form(
+                                    key: _formKey,
+                                    child: TextFormField(
+                                      validator: _validator,
+                                      textAlign: TextAlign.center,
+                                      maxLength: 8,
+                                      onChanged: (value) {},
+                                      keyboardType: TextInputType.number,
+                                      textInputAction: TextInputAction.done,
+                                      onFieldSubmitted: (input) => print(input),
+                                    ),
+                                  ),
+                              SizedBox(
+                                width: double.infinity,
+                                child: FlatButton(
+                                  color: Color(0xff28629C),
+                                  padding: EdgeInsets.all(10),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5)),
+                                  child: Text(
+                                    "Validar",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  onPressed: _btnValidar,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        child: const Text(
-                          "Bienvenido al Sistema de Gestión de Calidad",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: SizedBox(),
-                      ),
-                      ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: 300),
-                          child: Form(
-                            key: _formKey,
-                            child: TextFormField(
-
-                              validator: _validator,
-                              textAlign: TextAlign.center,
-                              maxLength: 8,
-                              onChanged: (value) {},
-                              keyboardType: TextInputType.number,
-                              textInputAction: TextInputAction.done,
-                              onFieldSubmitted: (input)=> print(input),
-                            ),
-                          )),
-                      Expanded(
-                        flex: 2,
-                        child: SizedBox(),
                       ),
                       SizedBox(
-                        width: 300,
-                        child: FlatButton(
-                          color: Color(0xff28629C),
-                          padding: EdgeInsets.all(10),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text(
-                            "Validar",
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                          onPressed: _btnValidar,
-                        ),
-                      ),
-                      Expanded(
-                        flex: 4,
-                        child: SizedBox(),
+                        height: SizeConfig.safeBlockVertical * 5,
                       ),
                       BottomBarTec()
                     ],

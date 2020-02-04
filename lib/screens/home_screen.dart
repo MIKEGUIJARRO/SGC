@@ -9,31 +9,44 @@ import './create_survey_screen.dart';
 
 import '../provider/survey.dart';
 import '../provider/survey_holder.dart';
+import '../screens/change_survey_screen.dart';
+import '../widgets/custom_app_bar.dart';
 
 class HomeScreen extends StatelessWidget {
   static const routeName = "/home";
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
-
   void _startSurvey(BuildContext context) {
     //Cargamos las preguntas a nuestro SurveyHolder
-    List<String> questions = Provider.of<Survey>(context,listen: false).getQuestions();
-    Provider.of<SurveyHolder>(context, listen: false).initSurveyHolder(questions);
+    List<String> questions =
+        Provider.of<Survey>(context, listen: false).getQuestions();
+    Provider.of<SurveyHolder>(context, listen: false)
+        .initSurveyHolder(questions);
     Navigator.of(context).pushNamed(QuestionScreen.routeName);
   }
 
-  void _createSurvey(BuildContext context){
+  void _createSurvey(BuildContext context) {
     Navigator.pushNamed(context, CreateSurveyScreen.routeName);
+  }
+
+  void _changeSurvey(BuildContext context) {
+    Navigator.pushNamed(context, ChangeSurveyScreen.routeName);
   }
 
   @override
   Widget build(BuildContext context) {
-
     final _survey = Provider.of<Survey>(context);
 
     return Scaffold(
       key: _drawerKey,
       backgroundColor: Colors.white,
+      appBar: CustomAppBar(
+        isRightEnabled: false,
+        isLeftEnabled: true,
+        iconLeft: IconButton(
+            icon: Icon(Icons.sort),
+            onPressed: () => _drawerKey.currentState.openDrawer()),
+      ),
       drawer: Drawer(
           child: ListView(children: <Widget>[
         UserAccountsDrawerHeader(
@@ -55,12 +68,12 @@ class HomeScreen extends StatelessWidget {
         ListTile(
           title: Text("Cambiar encuesta"),
           leading: Icon(Icons.swap_vert),
-          onTap: null,
+          onTap: () => _changeSurvey(context),
         ),
         ListTile(
           title: Text("Crear encuesta"),
           leading: Icon(Icons.create),
-          onTap: ()=> _createSurvey(context),
+          onTap: () => _createSurvey(context),
         ),
         ListTile(
           title: Text("Cerrar sesión"),
@@ -74,73 +87,51 @@ class HomeScreen extends StatelessWidget {
         ),
       ])),
       body: SafeArea(
-        child: Container(
-          width: double.infinity,
-          height: double.infinity,
-          child: Stack(
-            children: <Widget>[
-              Positioned(
-                top: 20,
-                left: 20,
-                child: IconButton(
-                  icon: Icon(Icons.sort),
-                  onPressed: () {
-                    _drawerKey.currentState.openDrawer();
-                  },
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.safeBlockHorizontal * 20,
+                  vertical: SizeConfig.safeBlockVertical * 5,
                 ),
-              ),
-              Column(
-                children: <Widget>[
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: SizeConfig.safeBlockVertical * 10,
-                        vertical: SizeConfig.safeBlockVertical * 5,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Image.asset(
-                            "./assets/images/logo.png",
-                            width: SizeConfig.safeBlockHorizontal * 15,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      _survey.getTitle(),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    SurveyInfo(
+                      num: _survey.getCounter(),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FlatButton(
+                        padding: EdgeInsets.all(10),
+                        color: Color(0xff28629C),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Text(
+                          "Iniciar Encuesta",
+                          style: TextStyle(
+                            color: Colors.white,
                           ),
-                          Text(
-                            _survey.getTitle(),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          SurveyInfo(
-                            num: _survey.getCounter(),
-                          ),
-                          SizedBox(
-                            width: double.infinity,
-                            child: FlatButton(
-                              padding: EdgeInsets.all(10),
-                              color: Color(0xff28629C),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: Text(
-                                "Iniciar Encuesta",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                              onPressed: () => _startSurvey(context),
-                            ),
-                          ),
-                        ],
+                        ),
+                        onPressed: () => _startSurvey(context),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: SizeConfig.safeBlockVertical * 10,
-                  ),
-                  BottomBarTec()
-                ],
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+            SizedBox(
+              height: SizeConfig.safeBlockVertical * 5,
+            ),
+            BottomBarTec()
+          ],
         ),
       ),
     );

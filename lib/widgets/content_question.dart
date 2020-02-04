@@ -63,7 +63,7 @@ class _ContentQuestionState extends State<ContentQuestion> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-        top: SizeConfig.safeBlockVertical * 5,
+        
         bottom: SizeConfig.safeBlockVertical * 10,
       ),
       child: Column(

@@ -38,20 +38,19 @@ class Survey with ChangeNotifier {
     ],
   };
 
-  Future<void> initSurvey(
+  void initSurvey(
       {String title,
       int counter,
       List<String> questions,
-      List<ResponseItem> responses}) async {
-    //Puede mejorar por que fetchea todas las preguntas y todas las respuestas
-    //A largo plazo no es rentable...
-    //Codigo donde descarga la base de datos
+      List<ResponseItem> responses}) {
 
     _surveyItems["title"] = title;
     _surveyItems["counter"] = counter;
     _surveyItems["content"] = questions.map((question) {
       return SurveyItem(question: question, responses: responses);
     }).toList();
+
+    notifyListeners();
   }
 
   addResponses(List<double> responses) {

@@ -7,6 +7,7 @@ import './screens/home_screen.dart';
 import './screens/question_screen.dart';
 import './screens/create_survey_screen.dart';
 import './provider/survey_holder.dart';
+import './screens/change_survey_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -14,9 +15,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    
-    
-    
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(
@@ -40,6 +38,7 @@ class MyApp extends StatelessWidget {
           HomeScreen.routeName: (context) => HomeScreen(),
           QuestionScreen.routeName: (context) => QuestionScreen(),
           CreateSurveyScreen.routeName: (context) => CreateSurveyScreen(),
+          ChangeSurveyScreen.routeName: (context) => ChangeSurveyScreen(),
         },
       ),
     );

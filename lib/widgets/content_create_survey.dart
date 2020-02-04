@@ -9,32 +9,32 @@ class ContentCreateSurvey extends StatelessWidget {
   final Key key;
   final int length;
 
-  ContentCreateSurvey({ this.index, this.delete, this.key, this.controller, this.length});
+  ContentCreateSurvey(
+      {this.index, this.delete, this.key, this.controller, this.length});
+
+
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        top: SizeConfig.safeBlockVertical * 5,
-        bottom: SizeConfig.safeBlockVertical * 5,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Card(
-            elevation: 8,
-            clipBehavior: Clip.antiAlias,
+    return Column(
+      children: <Widget>[
+        Card(
+          elevation: 8,
+          clipBehavior: Clip.antiAlias,
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: 20,
+              right: 20,
+              left: 20
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 20,
-                  ),
                   width: double.infinity,
-                  height: SizeConfig.safeBlockVertical * 8,
+                  height: SizeConfig.safeBlockVertical *10,
                   child: Stack(
+                    overflow: Overflow.visible,
                     alignment: Alignment.center,
                     children: <Widget>[
                       Positioned(
@@ -42,7 +42,7 @@ class ContentCreateSurvey extends StatelessWidget {
                         child: Text("${index + 1}/10"),
                       ),
                       Positioned(
-                          right: 0,
+                          right: -10,
                           child: ButtonTheme(
                             padding: EdgeInsets.all(5),
                             materialTapTargetSize:
@@ -54,33 +54,28 @@ class ContentCreateSurvey extends StatelessWidget {
                                   MaterialTapTargetSize.shrinkWrap,
                               child: Icon(Icons.remove),
                               shape: CircleBorder(),
-                              onPressed: (length == 1 && index ==0) ? null: ()=> delete(index),
+                              onPressed: (length == 1 && index == 0)
+                                  ? null
+                                  : () => delete(index),
                             ),
                           ))
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 20,
-                    right: 20,
-                    bottom: 20,
+                TextField(
+                  textInputAction: TextInputAction.done,
+                  controller: controller,
+                  maxLines: 3,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: InputDecoration(
+                    hintText: "Pregunta ${index + 1}",
                   ),
-                  child: TextField(
-                    textInputAction: TextInputAction.done,
-                    controller: controller,
-                    maxLines: 5,
-                    textCapitalization: TextCapitalization.sentences,
-                    decoration:
-                        InputDecoration(hintText: "Pregunta ${index + 1}",
-                        ),
-                  ),
-                )
+                ),
               ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
