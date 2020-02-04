@@ -54,7 +54,7 @@ class _ContentQuestionState extends State<ContentQuestion> {
     final surveyHolder = Provider.of<SurveyHolder>(context, listen: false);
     surveyHolder.cleanResponses();
     Provider.of<Survey>(context, listen: false)
-        .addResponses(surveyHolder.getResponses());
+        .addResponsesItem(surveyHolder.getResponses());
     Provider.of<Survey>(context, listen: false).increaseCounter();
     Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
   }

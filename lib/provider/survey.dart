@@ -2,105 +2,72 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-class ResponseItem {
-  //Id es el contador de preguntas
-  final String id;
-  final double response;
-  final DateTime dateTime;
-  ResponseItem(
-      {@required this.id, @required this.response, @required this.dateTime});
-}
-
-class SurveyItem {
-  //Item hace referencia a cada card con su pregunta.
-  //Una encuesta se compone de multiples preguntas.
-  //Modelo de encuesta individual que guarda toda la informacion core
-  // 1 sola pregunta y las n respuestas que se han tenido
-  final String question;
-  //Responses va a guardar la fecha de la respuesta y el valor de esta
-  final List<ResponseItem> responses;
-  SurveyItem({this.question, this.responses});
-}
+import '../models/survey_model.dart';
 
 class Survey with ChangeNotifier {
-  //Esta es la encuesta que se estara trabajando en macro en la app.
-  //La que se respondera "n" veces.
-
-  Map<String, dynamic> _surveyItems = {
-    "title": "titulo default",
-    "counter": 0,
-    "content": [
-      //Lista de surveyItems
-      SurveyItem(question: "Pregunta 1?", responses: []),
-    SurveyItem(question: "Pregunta 2?", responses: []),
-    SurveyItem(question: "Pregunta 3?", responses: []),
-    SurveyItem(question: "Pregunta 4?", responses: []),
-    ],
-  };
+  SurveyModel _surveyModel = SurveyModel(
+      id: "id010101",
+      title: "👈 Crea tu primer encuesta",
+      counter: 0,
+      itemQuestions: [
+        {"question": "Pregunta 1", "responses": []},
+        {"question": "Pregunta 2", "responses": []},
+        {"question": "Pregunta 3", "responses": []}
+      ]);
 
   void initSurvey(
-      {String title,
-      int counter,
-      List<String> questions,
-      List<ResponseItem> responses}) {
-
-    _surveyItems["title"] = title;
-    _surveyItems["counter"] = counter;
-    _surveyItems["content"] = questions.map((question) {
-      return SurveyItem(question: question, responses: responses);
-    }).toList();
-
+      {String id, String title, int counter, List<String> questions}) {
+    _surveyModel = SurveyModel(
+        id: id,
+        title: title,
+        counter: counter,
+        itemQuestions: questions
+            .map((question) => {"question": question, "responses": []})
+            .toList());
     notifyListeners();
   }
 
-  addResponses(List<double> responses) {
+  void printResponses() {
+    print("\tIndice\tNo. Respuesta");
+    for (int i = 0; i < _surveyModel.itemQuestions.length; i++) {
+      print("\tIndice principal $i\n");
+      for (int j = 0;
+          j < _surveyModel.itemQuestions[i]["responses"].length;
+          j++) {
+        print("\t$i\t${_surveyModel.itemQuestions[i]["responses"][j]}");
+      }
+    }
+
+    print("\nFinalizo recorrido");
+  }
+
+  void addResponsesItem(List<double> responses) {
     //Se agregan las respuestas de manera local y en la nube
     //Cada indice de pregunta pasa su indice de respuesta
-    if (responses.length != _surveyItems["content"].length) {
-      print(
-          "Existe una diferencia entre la cantidad de respuestas obtenidas y la las preguntas");
-      //Throw Error
-      return;
+    for (int i = 0; i < responses.length; i++) {
+      _surveyModel.itemQuestions[i]["responses"].add(responses[i]);
     }
-
-    for (int i = 0; i < _surveyItems["content"].length; i++) {
-      _surveyItems["content"][i].responses.add(ResponseItem(
-          id: DateTime.now().toString(),
-          response: responses[i],
-          dateTime: DateTime.now()));
-      print("Response $i: ${responses[i]}");
-    }
-
     notifyListeners();
   }
 
   List<String> getQuestions() {
-    var surveyHolder = _surveyItems["content"] as List<SurveyItem>;
-    return surveyHolder.map((item) => item.question).toList();
-  }
-
-  void setNewQuestions(List<String> questions, String title) {
-    _surveyItems["title"] = title;
-    print(_surveyItems["title"]);
-    List<SurveyItem> newQuestions = questions
-        .map((qxtn) => SurveyItem(question: qxtn, responses: []))
-        .toList();
-    _surveyItems["content"] = newQuestions;
-    notifyListeners();
+    List<String> currentCuestions = [];
+    for (int i = 0; i < _surveyModel.itemQuestions.length; i++) {
+      currentCuestions.add(_surveyModel.itemQuestions[i]["question"] as String);
+    }
+    return currentCuestions;
   }
 
   void increaseCounter() {
-    _surveyItems["counter"] ++;
+    _surveyModel.counter++;
     notifyListeners();
   }
 
   int getCounter() {
-    return _surveyItems["counter"];
+    return _surveyModel.counter;
   }
 
   String getTitle() {
-    return _surveyItems["title"];
+    return _surveyModel.title;
   }
-
-
 }

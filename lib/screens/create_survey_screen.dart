@@ -46,7 +46,7 @@ class QuestionsHolder {
       }
       print("--------------------\n");
       Provider.of<Survey>(context, listen: false).initSurvey(
-          counter: 0, questions: questions, title: title, responses: []);
+          counter: 0, questions: questions, title: title,);
     } catch (error) {
       print("Sucedio un error: $error");
     }

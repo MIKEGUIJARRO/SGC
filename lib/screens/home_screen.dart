@@ -41,11 +41,14 @@ class HomeScreen extends StatelessWidget {
       key: _drawerKey,
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
-        isRightEnabled: false,
+        isRightEnabled: true,
         isLeftEnabled: true,
         iconLeft: IconButton(
             icon: Icon(Icons.sort),
             onPressed: () => _drawerKey.currentState.openDrawer()),
+        iconRight: IconButton(
+            icon: Icon(Icons.toll),
+            onPressed: () => Provider.of<Survey>(context, listen: false).printResponses()),
       ),
       drawer: Drawer(
           child: ListView(children: <Widget>[
