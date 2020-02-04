@@ -45,6 +45,9 @@ class Survey with ChangeNotifier {
     //Se agregan las respuestas de manera local y en la nube
     //Cada indice de pregunta pasa su indice de respuesta
     for (int i = 0; i < responses.length; i++) {
+      if (responses[i] == null) {
+        responses[i] = 0.5;
+      }
       _surveyModel.itemQuestions[i]["responses"].add(responses[i]);
     }
     notifyListeners();

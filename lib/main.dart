@@ -7,6 +7,7 @@ import './screens/home_screen.dart';
 import './screens/question_screen.dart';
 import './screens/create_survey_screen.dart';
 import './provider/survey_holder.dart';
+import './provider/surveys.dart';
 import './screens/change_survey_screen.dart';
 
 void main() => runApp(MyApp());
@@ -14,7 +15,6 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(
@@ -22,7 +22,8 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider.value(
           value: Survey(),
-        )
+        ),
+        ChangeNotifierProvider.value(value: Surveys())
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

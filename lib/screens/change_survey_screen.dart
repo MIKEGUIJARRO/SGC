@@ -1,51 +1,76 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../constants/size_config.dart';
 import '../widgets/bottom_bar_tec.dart';
 import '../widgets/custom_app_bar.dart';
 
-class ChangeSurveyScreen extends StatefulWidget {
+import '../provider/surveys.dart';
+
+class ChangeSurveyScreen extends StatelessWidget {
   static const routeName = "/change_survey";
 
-  @override
-  _ChangeSurveyScreenState createState() => _ChangeSurveyScreenState();
-}
+  final GlobalKey<ScaffoldState> _scaffoldState = GlobalKey<ScaffoldState>();
 
-class _ChangeSurveyScreenState extends State<ChangeSurveyScreen> {
+  void _showSnackBar(String text, Color color) {
+    //Muestra si existe un textfield vacio.
+    final snackBar = SnackBar(
+      content: Text(text),
+      backgroundColor: color,
+    );
+    _scaffoldState.currentState.showSnackBar(snackBar);
+  }
+
   Widget _listBuilder(
-    BuildContext ctx,
-    int index,
-  ) {
+      {BuildContext ctx,
+      int index,
+      String title,
+      bool isSelected,
+      int responses,
+      String id}) {
     return Dismissible(
-      key: ValueKey(index),
+      key: ValueKey("$index$title"),
       background: Container(
         padding: EdgeInsets.only(
           right: SizeConfig.safeBlockHorizontal * 8,
         ),
-        color: Colors.red[300],
+        color: isSelected ? Theme.of(ctx).accentColor : Colors.red[300],
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             Icon(
-              Icons.delete,
+              isSelected ? Icons.check_circle : Icons.delete,
               color: Colors.white,
             )
           ],
         ),
       ),
-      onDismissed: (direction) => print(direction),
+      confirmDismiss: (direction) async {
+        if (isSelected == true){
+          _showSnackBar("No se pueden eliminar las encuestas seleccionadas",
+              Colors.grey[800]);
+          return false;
+        } 
+        return true;
+      },
+      onDismissed: (direction) => Provider.of<Surveys>(ctx, listen: false).removeSurvey(id),
       direction: DismissDirection.endToStart,
       child: InkWell(
-        onTap: () => print("ontap"),
+        onTap: () => Provider.of<Surveys>(ctx, listen: false).selectSurvey(id),
         focusColor: Colors.black12,
         child: ListTile(
-          leading: Icon(
-            Icons.check,
-            color: Theme.of(context).accentColor,
-          ),
-          title: Text("Titulo encuesta"),
-          subtitle: Text("#$index respuestas"),
+          leading: isSelected
+              ? Icon(
+                  Icons.check,
+                  color: Theme.of(ctx).accentColor,
+                )
+              : Icon(
+                  null,
+                  color: Theme.of(ctx).accentColor,
+                ),
+          title: Text(title),
+          subtitle: Text("#$responses respuestas"),
         ),
       ),
     );
@@ -53,7 +78,10 @@ class _ChangeSurveyScreenState extends State<ChangeSurveyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final surveysData = Provider.of<Surveys>(context);
+
     return Scaffold(
+      key: _scaffoldState,
       appBar: CustomAppBar(
         isLeftEnabled: true,
         isRightEnabled: false,
@@ -69,8 +97,16 @@ class _ChangeSurveyScreenState extends State<ChangeSurveyScreen> {
         children: <Widget>[
           Expanded(
               child: ListView.builder(
-            itemCount: 10,
-            itemBuilder: (ctx, i) => _listBuilder(ctx, i),
+            itemCount: surveysData.surveys.length,
+            itemBuilder: (ctx, i) => _listBuilder(
+              ctx: ctx,
+              index: i,
+              isSelected: surveysData.surveys[i].isSelected,
+              responses:
+                  surveysData.surveys[i].itemQuestions[0]["responses"].length,
+              title: surveysData.surveys[i].title,
+              id: surveysData.surveys[i].id,
+            ),
           )),
           BottomBarTec()
         ],

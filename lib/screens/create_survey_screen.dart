@@ -8,7 +8,7 @@ import '../widgets/content_create_survey.dart';
 import '../widgets/alert_dialog_save.dart';
 import '../provider/survey.dart';
 import '../widgets/custom_app_bar.dart';
-
+import '../provider/surveys.dart';
 /* 
     Se busca el hacer la misma implementacion que se realizo con el Provider 
     SurveyHolder, sin embargo, mantendremos los estados de nuestras preguntas 
@@ -46,7 +46,12 @@ class QuestionsHolder {
       }
       print("--------------------\n");
       Provider.of<Survey>(context, listen: false).initSurvey(
-          counter: 0, questions: questions, title: title,);
+        counter: 0,
+        questions: questions,
+        title: title,
+      );
+      Provider.of<Surveys>(context, listen: false).addSurvey(
+          id: DateTime.now().toIso8601String(), title: title, questions: questions);
     } catch (error) {
       print("Sucedio un error: $error");
     }

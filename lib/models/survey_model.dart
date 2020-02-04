@@ -5,8 +5,9 @@ class SurveyModel {
   String title;
   int counter;
   List<Map<String, dynamic>> itemQuestions;
+  bool isSelected;
   //En itemQuestion almacenamos los valores de las multiples
   //respuestas obtenidas de acuerdo a cada pregunta disponible
 
-  SurveyModel({this.id, this.title, this.counter, this.itemQuestions});
+  SurveyModel({this.id, this.title, this.counter, this.isSelected, this.itemQuestions});
 }
