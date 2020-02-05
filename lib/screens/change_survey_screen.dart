@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../constants/size_config.dart';
 import '../widgets/bottom_bar_tec.dart';
 import '../widgets/custom_app_bar.dart';
+import '../provider/survey.dart';
 
 import '../provider/surveys.dart';
 
@@ -11,15 +12,6 @@ class ChangeSurveyScreen extends StatelessWidget {
   static const routeName = "/change_survey";
 
   final GlobalKey<ScaffoldState> _scaffoldState = GlobalKey<ScaffoldState>();
-
-  void _showSnackBar(String text, Color color) {
-    //Muestra si existe un textfield vacio.
-    final snackBar = SnackBar(
-      content: Text(text),
-      backgroundColor: color,
-    );
-    _scaffoldState.currentState.showSnackBar(snackBar);
-  }
 
   Widget _listBuilder(
       {BuildContext ctx,
@@ -34,30 +26,31 @@ class ChangeSurveyScreen extends StatelessWidget {
         padding: EdgeInsets.only(
           right: SizeConfig.safeBlockHorizontal * 8,
         ),
-        color: isSelected ? Theme.of(ctx).accentColor : Colors.red[300],
+        color: Colors.red[300],
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             Icon(
-              isSelected ? Icons.check_circle : Icons.delete,
+              Icons.delete,
               color: Colors.white,
             )
           ],
         ),
       ),
-      confirmDismiss: (direction) async {
-        if (isSelected == true){
-          _showSnackBar("No se pueden eliminar las encuestas seleccionadas",
-              Colors.grey[800]);
-          return false;
-        } 
-        return true;
-      },
-      onDismissed: (direction) => Provider.of<Surveys>(ctx, listen: false).removeSurvey(id),
+      onDismissed: (direction) =>
+          Provider.of<Surveys>(ctx, listen: false).removeSurvey(id),
       direction: DismissDirection.endToStart,
       child: InkWell(
-        onTap: () => Provider.of<Surveys>(ctx, listen: false).selectSurvey(id),
+        onTap: () {
+          final newSelectedSurvey =
+              Provider.of<Surveys>(ctx, listen: false).selectSurvey(id);
+          Provider.of<Survey>(ctx, listen: false).initSurvey(
+              title: newSelectedSurvey.title,
+              counter: newSelectedSurvey.counter,
+              id: newSelectedSurvey.id,
+              questions: newSelectedSurvey.itemQuestions.map((map)=>map["question"] as String).toList());
+        },
         focusColor: Colors.black12,
         child: ListTile(
           leading: isSelected

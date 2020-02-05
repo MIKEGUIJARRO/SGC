@@ -162,6 +162,8 @@ class _CreateSurveyScreenState extends State<CreateSurveyScreen> {
             return AlertDialogSave(
               disposeHolder: (String tituloDialog) {
                 _questionsHolder.updateProvider(context, tituloDialog);
+                //Cerramos el teclado
+                FocusScope.of(context).requestFocus(FocusNode());
                 Navigator.of(context).pop();
               },
             );

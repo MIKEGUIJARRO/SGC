@@ -11,6 +11,7 @@ import '../provider/survey.dart';
 import '../provider/survey_holder.dart';
 import '../screens/change_survey_screen.dart';
 import '../widgets/custom_app_bar.dart';
+import '../provider/surveys.dart';
 
 class HomeScreen extends StatelessWidget {
   static const routeName = "/home";
@@ -36,6 +37,19 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _survey = Provider.of<Survey>(context);
+    final _surveys = Provider.of<Surveys>(context);
+
+    //Establecemos los valores que se mostraran po default
+
+    int counterHolder = 0;
+    String titleHolder = "👈 Crea tu primer encuesta";
+    bool availableHolder = false;
+
+    if (_surveys.getLength() > 0) {
+      counterHolder = _survey.getCounter();
+      titleHolder = _survey.getTitle();
+      availableHolder = true;
+    }
 
     return Scaffold(
       key: _drawerKey,
@@ -48,7 +62,8 @@ class HomeScreen extends StatelessWidget {
             onPressed: () => _drawerKey.currentState.openDrawer()),
         iconRight: IconButton(
             icon: Icon(Icons.toll),
-            onPressed: () => Provider.of<Survey>(context, listen: false).printResponses()),
+            onPressed: () =>
+                Provider.of<Survey>(context, listen: false).printResponses()),
       ),
       drawer: Drawer(
           child: ListView(children: <Widget>[
@@ -102,12 +117,12 @@ class HomeScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      _survey.getTitle(),
+                      titleHolder,
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 20),
                     ),
                     SurveyInfo(
-                      num: _survey.getCounter(),
+                      num: counterHolder,
                     ),
                     SizedBox(
                       width: double.infinity,
@@ -123,7 +138,10 @@ class HomeScreen extends StatelessWidget {
                             color: Colors.white,
                           ),
                         ),
-                        onPressed: () => _startSurvey(context),
+                        disabledColor: Colors.black38,
+                        onPressed: availableHolder
+                            ? () => _startSurvey(context)
+                            : null,
                       ),
                     ),
                   ],
