@@ -9,6 +9,7 @@ import '../widgets/content_question.dart';
 import '../widgets/custom_app_bar.dart';
 
 import '../provider/survey_holder.dart';
+import '../provider/surveys.dart';
 
 class QuestionScreen extends StatelessWidget {
   static const routeName = "/question";
@@ -17,6 +18,7 @@ class QuestionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     //Continua escuchando la longitud de la lista para futuros cambios
     final surveyHolder = Provider.of<SurveyHolder>(context);
+    final surveyId = Provider.of<Surveys>(context).getSelectedId();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -56,6 +58,7 @@ class QuestionScreen extends StatelessWidget {
                               itemBuilder: (context, i) {
                                 return ContentQuestion(
                                   index: i,
+                                  id: surveyId,
                                 );
                               },
                             ),

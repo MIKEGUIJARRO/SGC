@@ -7,12 +7,15 @@ import '../screens/home_screen.dart';
 
 import '../provider/survey_holder.dart';
 import '../provider/survey.dart';
+import '../provider/surveys.dart';
 
 class ContentQuestion extends StatefulWidget {
   final int index;
+  final String id;
 
   ContentQuestion({
     this.index,
+    this.id,
   });
 
   @override
@@ -53,9 +56,14 @@ class _ContentQuestionState extends State<ContentQuestion> {
   void _onSave() {
     final surveyHolder = Provider.of<SurveyHolder>(context, listen: false);
     surveyHolder.cleanResponses();
-    Provider.of<Survey>(context, listen: false)
-        .addResponsesItem(surveyHolder.getResponses());
-    Provider.of<Survey>(context, listen: false).increaseCounter();
+
+    final survey = Provider.of<Survey>(context, listen: false);
+    survey.addResponsesItem(surveyHolder.getResponses());
+    survey.increaseCounter();
+
+    final surveys = Provider.of<Surveys>(context, listen: false);
+    surveys.addResponsesItem(surveyHolder.getResponses(), widget.id);
+    surveys.increaseCounter(widget.id);
     Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
   }
 
@@ -63,7 +71,6 @@ class _ContentQuestionState extends State<ContentQuestion> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-        
         bottom: SizeConfig.safeBlockVertical * 10,
       ),
       child: Column(
