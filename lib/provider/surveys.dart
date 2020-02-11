@@ -12,8 +12,7 @@ class Surveys with ChangeNotifier {
   }
 
   void addSurvey(
-      {@required String id,
-      @required String title,
+      {@required String title,
       int counter = 0,
       @required List<String> questions}) async {
     //Implementacion Firebase
@@ -34,11 +33,25 @@ class Surveys with ChangeNotifier {
                 .toList(),
           }));
 
+      final id = json.decode(response.body)["name"];
+      var idHolder = "";
+
+      //Deselecciona las encuestas seleccionadas
+      _surveysModel.forEach((survey) {
+        //Descartamos el id que acabamos de crear
+        if (survey.id != id) {
+          idHolder = survey.id;
+          final patchUrl =
+              "https://sgc-itesm-servicio-social.firebaseio.com/surveys/$idHolder.json";
+          http.patch(patchUrl, body: json.encode({"isSelected": false}));
+        }
+      });
+
       //Implementacion local
       _surveysModel.forEach((survey) => survey.isSelected = false);
 
       _surveysModel.add(SurveyModel(
-          id: json.decode(response.body)["name"],
+          id: id,
           title: title,
           counter: counter,
           isSelected: true,
@@ -67,27 +80,58 @@ class Surveys with ChangeNotifier {
     }
   }
 
-  SurveyModel selectSurvey(String id)  {
-    int indiceSelected;
-
-    for (int i = 0; i < _surveysModel.length; i++) {
-      SurveyModel surveyHolder = _surveysModel[i];
-
-      if (surveyHolder.id == id) {
-        indiceSelected = i;
-        surveyHolder.isSelected = true;
-      } else {
-        surveyHolder.isSelected = false;
-      }
-    }
-
-    try {} catch (error) {}
-
-    notifyListeners();
-    return _surveysModel[indiceSelected];
+  SurveyModel getSelectedSurvey() {
+    int indexSelected =
+        _surveysModel.indexWhere((survey) => survey.isSelected == true);
+    return _surveysModel[indexSelected];
   }
 
-  void fetchAndGetSurveys() {}
+  //Select survey pendiente
+  void selectSurvey(String id) async {
+    var idHolder = "";
+    try {
+      //Cambio de manera local y en firebase
+      _surveysModel.forEach((survey) {
+        idHolder = survey.id;
+        final patchUrl =
+            "https://sgc-itesm-servicio-social.firebaseio.com/surveys/$idHolder.json";
+
+        if (survey.id != id) {
+          //Si no es el seleccionado lo deseleccionamos
+          survey.isSelected = false;
+
+          http.patch(patchUrl, body: json.encode({"isSelected": false}));
+        } else {
+          survey.isSelected = true;
+          http.patch(patchUrl, body: json.encode({"isSelected": true}));
+        }
+      });
+    } catch (error) {}
+
+    notifyListeners();
+  }
+
+  void fetchAndSetSurveys() async {
+    try {
+      final url =
+          "https://sgc-itesm-servicio-social.firebaseio.com/surveys.json";
+      final response = await http.get(url);
+
+      if (response.statusCode >= 400) {
+        print("Error status code: ${response.statusCode}");
+      }
+      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      if (extractedData == null) {
+        return;
+      }
+
+      print(extractedData);
+
+    } catch (error) {
+      print("Error al momento de descargar la info: ");
+      print(error);
+    }
+  }
 
   int getLength() {
     return _surveysModel.length;

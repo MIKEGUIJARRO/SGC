@@ -43,13 +43,17 @@ class ChangeSurveyScreen extends StatelessWidget {
       direction: DismissDirection.endToStart,
       child: InkWell(
         onTap: () {
-          final newSelectedSurvey =
-              Provider.of<Surveys>(ctx, listen: false).selectSurvey(id);
+          final surveys = Provider.of<Surveys>(ctx, listen: false);
+          surveys.selectSurvey(id);
+          final newSelectedSurvey = surveys.getSelectedSurvey();
+
           Provider.of<Survey>(ctx, listen: false).initSurvey(
               title: newSelectedSurvey.title,
               counter: newSelectedSurvey.counter,
               id: newSelectedSurvey.id,
-              questions: newSelectedSurvey.itemQuestions.map((map)=>map["question"] as String).toList());
+              questions: newSelectedSurvey.itemQuestions
+                  .map((map) => map["question"] as String)
+                  .toList());
         },
         focusColor: Colors.black12,
         child: ListTile(

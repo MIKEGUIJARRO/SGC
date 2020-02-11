@@ -50,8 +50,8 @@ class QuestionsHolder {
         questions: questions,
         title: title,
       );
-      Provider.of<Surveys>(context, listen: false).addSurvey(
-          id: DateTime.now().toIso8601String(), title: title, questions: questions);
+      Provider.of<Surveys>(context, listen: false)
+          .addSurvey(title: title, questions: questions);
     } catch (error) {
       print("Sucedio un error: $error");
     }

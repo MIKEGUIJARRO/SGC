@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
   static const routeName = "/home";
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
-  void _startSurvey(BuildContext context) {
+  void _startSurvey(BuildContext context) async {
     //Cargamos las preguntas a nuestro SurveyHolder
     List<String> questions =
         Provider.of<Survey>(context, listen: false).getQuestions();
@@ -37,9 +37,10 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _survey = Provider.of<Survey>(context);
-    final _surveys = Provider.of<Surveys>(context);
+    final _surveys = Provider.of<Surveys>(context, listen: false);
 
     //Establecemos los valores que se mostraran po default
+    _surveys.fetchAndSetSurveys();
 
     int counterHolder = 0;
     String titleHolder = "👈 Crea tu primer encuesta";
